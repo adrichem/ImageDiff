@@ -1,0 +1,19 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <AssemblyName>Adrichem.ImageDiff</AssemblyName>
+    <RootNamespace>Adrichem.ImageDiff</RootNamespace>
+    <Authors>Gerben van Adrichem</Authors>
+    <PackageLicenseUrl>https://github.com/adrichem/ImageDiff/LICENSE</PackageLicenseUrl>
+    <Copyright>Gerben van Adrichem</Copyright>
+    <Description>ImageDiff determines the differences between two images. Generates nice output highlighting where differences are found.</Description>
+    <PackageProjectUrl>https://github.com/adrichem/ImageDiff</PackageProjectUrl>
+    <PackageReleaseNotes>image diff difference perceptual yiq</PackageReleaseNotes>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="SkiaSharp" Version="1.68.1.1" />
+  </ItemGroup>
+
+</Project>

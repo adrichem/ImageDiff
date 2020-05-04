@@ -19,14 +19,14 @@ images and supply the RGBA values of the selected color.
 using Adrichem.ImageDiff;
 using Adrichem.ImageDiff.Algorithms;
 
-var Image1 = SKBitmap.Decode("image1.png");
-var Image2 = SKBitmap.Decode("image2.png");
+ var Image1 = new Bitmap(Image.FromFile(Test.Image1));
+ var Image2 = new Bitmap(Image.FromFile(Test.Image2));
 
 var Differ = new SimpleDiffer
 {
     Options = new DiffOptions
     {
-        IgnoreColor = new SKColor(255, 216, 0, 255),
+        IgnoreColor = Color.FromArgb(216, 0, 255),
     }
 };
 
@@ -36,16 +36,12 @@ var Differ = new PerceptualDiffer
 {
     Options = new PerceptualDiffOptions
     {
-        IgnoreColor = new SKColor(255, 216, 0, 255),
+        IgnoreColor = Color.FromArgb(255, 216, 0),
         Threshold = 0.1f
     }
 };
 var DiffOutcome = Differ.Diff(Image1, Image2);
 var ActualDiffImage = DiffOutcome.DiffImage;
+ActualDiffImage.Save(Path.Combine(Path.GetTempPath(), Test.Name + "diff.png"));
 
-SKImage
-    .FromBitmap(ActualDiffImage)
-    .Encode()
-    .SaveTo("diff-result.png")))
-;
 ```

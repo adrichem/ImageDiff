@@ -1,6 +1,6 @@
 ﻿namespace Adrichem.ImageDiff
 {
-    using SkiaSharp;
+    using System.Drawing;
 
     /// <summary>
     /// The result of an image comparison.
@@ -14,6 +14,6 @@
         /// <summary>
         /// An image that highlights the detected differences.
         /// </summary>
-        public SKBitmap DiffImage { get; internal set; }
+        public Bitmap DiffImage { get; internal set; }
     }
 }

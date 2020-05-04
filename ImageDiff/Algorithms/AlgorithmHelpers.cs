@@ -1,16 +1,16 @@
 ﻿namespace Adrichem.ImageDiff.Algorithms
 {
-    using SkiaSharp;
+    using System.Drawing;
   
     internal static class AlgorithmHelpers
     {
-        public static SKColor MakeGrayAndTenPercentTransparant(SKColor p)
+        public static Color MakeGrayAndTenPercentTransparant(Color p)
         {
             byte val = ColorHelpers.Blend(
-                ColorHelpers.Luminosity(p.Red, p.Green, p.Blue, p.Alpha),
+                ColorHelpers.Luminosity(p.R, p.G, p.B, p.A),
                 255,
                 26);
-            return new SKColor(val, val, val, 255);
+            return Color.FromArgb(255, val, val, val);
         }
     }
 }

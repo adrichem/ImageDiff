@@ -1,11 +1,11 @@
 namespace TestImageDiff
 {
-    using Adrichem.ImageDiff;
     using Adrichem.ImageDiff.Algorithms;
     using Microsoft.VisualStudio.TestTools.UnitTesting;
-    using SkiaSharp;
     using System.Collections.Generic;
+    using System.Drawing;
     using System.IO;
+
 
     class RealImageTest
     {
@@ -13,13 +13,13 @@ namespace TestImageDiff
         public string Image1;
         public string Image2;
         public string ExpectedResult;
-        public SKColor? IgnoreColor;
+        public Color? IgnoreColor;
     }
 
     [TestClass]
     public class TestSimpleDiffer
     {
-        #region various
+    #region various
         [TestMethod]
         public void TestRealImages()
         {
@@ -36,15 +36,15 @@ namespace TestImageDiff
                     Name = "test-ignorecolor",
                     Image1 = @"./Images/test-ignorecolor-1.png",
                     Image2 = @"./Images/test-ignorecolor-2.png",
-                    IgnoreColor = new SKColor(255, 216, 0, 255),
+                    IgnoreColor = Color.FromArgb(255, 216, 0),
                     ExpectedResult = @"./Images/test-ignorecolor-result.png"
                 }
             };
             foreach(var Test in Tests)
             {
-                var Image1 = SKBitmap.Decode(Test.Image1);
-                var Image2 = SKBitmap.Decode(Test.Image2);
-                var ExpectedDiffImage = SKBitmap.Decode(Test.ExpectedResult);
+                var Image1 = new Bitmap(Image.FromFile(Test.Image1));
+                var Image2 = new Bitmap(Image.FromFile(Test.Image2));
+                var ExpectedDiffImage = new Bitmap(Image.FromFile(Test.ExpectedResult));
 
                 var Differ = new SimpleDiffer
                 {
@@ -55,12 +55,8 @@ namespace TestImageDiff
                 };
                 var DiffOutcome = Differ.Diff(Image1, Image2);
                 var ActualDiffImage = DiffOutcome.DiffImage;
-
-                SKImage
-                    .FromBitmap(ActualDiffImage)
-                    .Encode()
-                    .SaveTo(File.Create(Path.Combine(Path.GetTempPath(), Test.Name + "-result.png")))
-                ;
+                ActualDiffImage.Save(Path.Combine(Path.GetTempPath(), Test.Name + "-result.png"));
+               
                 Assert.IsTrue(DiffOutcome.Different, Test.Name);
                 Assert.IsFalse(Differ.Diff(ExpectedDiffImage, ActualDiffImage).Different, Test.Name);
             }
@@ -72,19 +68,19 @@ namespace TestImageDiff
         public void TestDiffColor()
         {
             var Differ = new SimpleDiffer();
-            var Image1 = new SKBitmap(1, 1);
-            var Image2 = new SKBitmap(1, 1);
-            Image1.SetPixel(0, 0, SKColors.Red);
-            Image2.SetPixel(0, 0, SKColors.Blue);
+            var Image1 = new Bitmap(1, 1);
+            var Image2 = new Bitmap(1, 1);
+            Image1.SetPixel(0, 0, Color.Red);
+            Image2.SetPixel(0, 0, Color.Blue);
 
-            var TestColors = new List<SKColor>
+            var TestColors = new List<Color>
             {
-                  SKColors.Red
-                , SKColors.Green
-                , SKColors.Blue
-                , SKColors.Black
-                , SKColors.White
-                , new SKColor(12,12,12,255)
+                  Color.FromArgb(255,0,0)
+                , Color.FromArgb(0,255,0)
+                , Color.FromArgb(0,0,255)
+                , Color.FromArgb(0,0,0)
+                , Color.FromArgb(255,255,255)
+                , Color.FromArgb(12,12,12)
             };
 
             foreach (var ExpectedDiffColor in TestColors)
@@ -102,8 +98,8 @@ namespace TestImageDiff
         [TestMethod]
         public void TestDifferentImageSize()
         {
-            var Image1 = new SKBitmap(1, 1);
-            var Image2 = new SKBitmap(2, 2);
+            var Image1 = new Bitmap(1, 1);
+            var Image2 = new Bitmap(2, 2);
 
             var Differ = new SimpleDiffer();
             var Result = Differ.Diff(Image1, Image2);
@@ -111,9 +107,9 @@ namespace TestImageDiff
             Assert.IsTrue(Result.Different);
             Assert.IsNull(Result.DiffImage);
         }
-        #endregion
+    #endregion
 
-        #region Parameter validation
+    #region Parameter validation
         [TestMethod]
         public void TestMissingOptions()
         {
@@ -122,10 +118,10 @@ namespace TestImageDiff
                 Options = null
             };
 
-            var Image1 = new SKBitmap(1, 1);
-            var Image2 = new SKBitmap(1, 1);
-            Image1.SetPixel(0, 0, SKColors.Red);
-            Image2.SetPixel(0, 0, SKColors.Blue);
+            var Image1 = new Bitmap(1, 1);
+            var Image2 = new Bitmap(1, 1);
+            Image1.SetPixel(0, 0, Color.Red);
+            Image2.SetPixel(0, 0, Color.Blue);
 
             Assert.ThrowsException<System.ArgumentNullException>(() => Differ.Diff(Image1, Image2));
         }
@@ -134,31 +130,31 @@ namespace TestImageDiff
         public void TestMissingImages()
         {
             var Differ = new SimpleDiffer();
-            var Image1 = new SKBitmap(1, 1);
-            var Image2 = new SKBitmap(1, 1);
-            Image1.SetPixel(0, 0, SKColors.Red);
-            Image2.SetPixel(0, 0, SKColors.Blue);
+            var Image1 = new Bitmap(1, 1);
+            var Image2 = new Bitmap(1, 1);
+            Image1.SetPixel(0, 0, Color.Red);
+            Image2.SetPixel(0, 0, Color.Blue);
 
             Assert.ThrowsException<System.ArgumentNullException>(() => Differ.Diff(Image1, null));
             Assert.ThrowsException<System.ArgumentNullException>(() => Differ.Diff(null, Image2));
             Assert.ThrowsException<System.ArgumentNullException>(() => Differ.Diff(null, null));
         }
 
-        #endregion
+    #endregion
                      
-        #region Ignore Color tests
+    #region Ignore Color tests
         [TestMethod]
         public void TestIgnoreColorZeroPixelsAreIgnoreColor()
         {
             var Differ = new SimpleDiffer();
-            var Image1 = new SKBitmap(1, 1);
-            var Image2 = new SKBitmap(1, 1);
-            Image1.SetPixel(0, 0, SKColors.Red);
-            Image2.SetPixel(0, 0, SKColors.Blue);
+            var Image1 = new Bitmap(1, 1);
+            var Image2 = new Bitmap(1, 1);
+            Image1.SetPixel(0, 0, Color.Red);
+            Image2.SetPixel(0, 0, Color.Blue);
 
             Differ.Options = new DiffOptions
             {
-                IgnoreColor = SKColors.Green
+                IgnoreColor = Color.Green
             };
             var Result = Differ.Diff(Image1, Image2);
             Assert.IsTrue(Result.Different);
@@ -168,24 +164,24 @@ namespace TestImageDiff
         public void TestIgnoreColorOnePixelIsIgnoreColor()
         {
             var Differ = new SimpleDiffer();
-            var Image1 = new SKBitmap(1, 1);
-            var Image2 = new SKBitmap(1, 1);
-            Image1.SetPixel(0, 0, SKColors.Red);
-            Image2.SetPixel(0, 0, SKColors.Yellow);
+            var Image1 = new Bitmap(1, 1);
+            var Image2 = new Bitmap(1, 1);
+            Image1.SetPixel(0, 0, Color.FromArgb(255, 0, 0, 0));
+            Image2.SetPixel(0, 0, Color.FromArgb(255,255,0));
 
             Differ.Options = new DiffOptions
             {
-                IgnoreColor = SKColors.Yellow
+                IgnoreColor = Color.FromArgb(255, 255, 0)
             };
             var Result = Differ.Diff(Image1, Image2);
             Assert.IsFalse(Result.Different);
 
-            Image1.SetPixel(0, 0, SKColors.Red);
-            Image2.SetPixel(0, 0, SKColors.Yellow);
+            Image1.SetPixel(0, 0, Color.FromArgb(255,0,0,0));
+            Image2.SetPixel(0, 0, Color.FromArgb(255, 255, 0));
 
             Differ.Options = new DiffOptions
             {
-                IgnoreColor = SKColors.Red
+                IgnoreColor = Color.FromArgb(255, 0, 0, 0)
             };
             Result = Differ.Diff(Image1, Image2);
             Assert.IsFalse(Result.Different);
@@ -196,14 +192,14 @@ namespace TestImageDiff
         public void TestIgnoreColorBothPixelsAreIgnoreColor()
         {
             var Differ = new SimpleDiffer();
-            var Image1 = new SKBitmap(1, 1);
-            var Image2 = new SKBitmap(1, 1);
-            Image1.SetPixel(0, 0, SKColors.Yellow);
-            Image2.SetPixel(0, 0, SKColors.Yellow);
+            var Image1 = new Bitmap(1, 1);
+            var Image2 = new Bitmap(1, 1);
+            Image1.SetPixel(0, 0, Color.Yellow);
+            Image2.SetPixel(0, 0, Color.Yellow);
 
             Differ.Options = new DiffOptions
             {
-                IgnoreColor = SKColors.Yellow
+                IgnoreColor = Color.Yellow
             };
             var Result = Differ.Diff(Image1, Image2);
             Assert.IsFalse(Result.Different);
@@ -213,10 +209,10 @@ namespace TestImageDiff
         public void TestIgnoreColorNotUsed()
         {
             var Differ = new SimpleDiffer();
-            var Image1 = new SKBitmap(1, 1);
-            var Image2 = new SKBitmap(1, 1);
-            Image1.SetPixel(0, 0, SKColors.Red);
-            Image2.SetPixel(0, 0, SKColors.Yellow);
+            var Image1 = new Bitmap(1, 1);
+            var Image2 = new Bitmap(1, 1);
+            Image1.SetPixel(0, 0, Color.Red);
+            Image2.SetPixel(0, 0, Color.Yellow);
 
             Differ.Options = new DiffOptions
             {
@@ -226,9 +222,8 @@ namespace TestImageDiff
             Assert.IsTrue(Result.Different);
         }
 
-        #endregion
+    #endregion
     }
-
 
 }
 

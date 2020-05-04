@@ -1,6 +1,6 @@
 ﻿namespace Adrichem.ImageDiff.Algorithms
 {
-    using SkiaSharp;
+    using System.Drawing;
 
     /// <summary>
     /// Options to control how differences are detected.
@@ -10,12 +10,12 @@
         /// <summary>
         /// What color to ignore when comparing pixels.
         /// </summary>
-        public SKColor? IgnoreColor { get; set; }
+        public Color? IgnoreColor { get; set; }
 
         /// <summary>
         /// What color to use when highlighting differences.
         /// </summary>
-        public SKColor DiffColor { get; set; } = SKColors.Red;
+        public Color DiffColor { get; set; } = Color.FromArgb(0xff,0x00,0x00);
  
     }
 }

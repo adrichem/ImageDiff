@@ -1,7 +1,7 @@
 ﻿namespace Adrichem.ImageDiff.Algorithms
 {
     using System;
-    using SkiaSharp;
+    using System.Drawing;
 
     /// <summary>
     /// Compares 2 images based on equality of their pixel's RGBA values.
@@ -19,7 +19,7 @@
         /// <param name="Image1">The 1st image</param>
         /// <param name="Image2">The 2nd image</param>
         /// <returns><seealso cref="DiffResult"/></returns>
-        public DiffResult Diff(SKBitmap Image1, SKBitmap Image2)
+        public DiffResult Diff(Bitmap Image1, Bitmap Image2)
         {
             if (null == Image1) throw new ArgumentNullException(nameof(Image1));
             if (null == Image2) throw new ArgumentNullException(nameof(Image2));
@@ -34,7 +34,7 @@
             }
 
             uint NumDifferentPixels = 0;
-            var DiffImage = new SKBitmap(Image1.Width, Image1.Height);
+            var DiffImage = new Bitmap(Image1.Width, Image1.Height);
 
             for (int x = 0; x < Image1.Width; x++)
             {

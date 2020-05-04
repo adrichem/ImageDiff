@@ -1,8 +1,10 @@
-﻿namespace Adrichem.ImageDiff
+﻿using System.Drawing;
+
+namespace Adrichem.ImageDiff
 {
-    using SkiaSharp;
+    
     public interface IImageDiffer
     {
-        DiffResult Diff(SKBitmap Image1, SKBitmap Image2);
+        DiffResult Diff(Bitmap Image1, Bitmap Image2);
     }
 }

@@ -1,7 +1,7 @@
 ﻿namespace Adrichem.ImageDiff.Algorithms
 {
-    using SkiaSharp;
     using System;
+    using System.Drawing;
 
     /// <summary>
     /// Uses perceptual color difference metrics to determine if images look the same according to the paper
@@ -12,7 +12,7 @@
     {
         public PerceptualDiffOptions Options { get; set; } = new PerceptualDiffOptions();
 
-        public DiffResult Diff(SKBitmap Image1, SKBitmap Image2)
+        public DiffResult Diff(Bitmap Image1, Bitmap Image2)
         {
             if (null == Image1) throw new ArgumentNullException(nameof(Image1));
             if (null == Image2) throw new ArgumentNullException(nameof(Image2));
@@ -29,9 +29,9 @@
 
             //Determine if each pixel is same or different
             uint NumDifferentPixels = 0;
-            var DiffImage = new SKBitmap(Image1.Width, Image1.Height);
+            var DiffImage = new Bitmap(Image1.Width, Image1.Height);
 
-            // maximum acceptable square distance between two colors;
+            // Max acceptable square distance between two colors
             // 35215 is the maximum possible value for the YIQ difference metric
             float MaxDifference = 35215 * Options.Threshold * Options.Threshold;
             
@@ -69,16 +69,16 @@
         }
 
 
-        private float PerceptualColorDifference(SKColor Pixel1, SKColor Pixel2) 
+        private float PerceptualColorDifference(Color Pixel1, Color Pixel2) 
         {
 
-	        byte r1 = ColorHelpers.Blend(Pixel1.Red, 255, Pixel1.Alpha);
-            byte g1 = ColorHelpers.Blend(Pixel1.Green, 255, Pixel1.Alpha);
-            byte b1 = ColorHelpers.Blend(Pixel1.Blue, 255, Pixel1.Alpha);
+	        byte r1 = ColorHelpers.Blend(Pixel1.R, 255, Pixel1.A);
+            byte g1 = ColorHelpers.Blend(Pixel1.G, 255, Pixel1.A);
+            byte b1 = ColorHelpers.Blend(Pixel1.B, 255, Pixel1.A);
 
-            byte r2 = ColorHelpers.Blend(Pixel2.Red, 255, Pixel2.Alpha);
-            byte g2 = ColorHelpers.Blend(Pixel2.Green, 255, Pixel2.Alpha);
-            byte b2 = ColorHelpers.Blend(Pixel2.Blue, 255, Pixel2.Alpha);
+            byte r2 = ColorHelpers.Blend(Pixel2.R, 255, Pixel2.A);
+            byte g2 = ColorHelpers.Blend(Pixel2.G, 255, Pixel2.A);
+            byte b2 = ColorHelpers.Blend(Pixel2.B, 255, Pixel2.A);
 
             float y = ColorHelpers.rgb2y(r1, g1, b1) - ColorHelpers.rgb2y(r2, g2, b2);
             float i = ColorHelpers.rgb2i(r1, g1, b1) - ColorHelpers.rgb2i(r2, g2, b2);

@@ -10,8 +10,17 @@
     /// </summary>
     public class PerceptualDiffer
     {
+        /// <summary>
+        /// The options to use when diffing the images.
+        /// </summary>
         public PerceptualDiffOptions Options { get; set; } = new PerceptualDiffOptions();
 
+        /// <summary>
+        /// Performs the comparison.
+        /// </summary>
+        /// <param name="Image1">The 1st image</param>
+        /// <param name="Image2">The 2nd image</param>
+        /// <returns><seealso cref="DiffResult"/></returns>
         public DiffResult Diff(Bitmap Image1, Bitmap Image2)
         {
             if (null == Image1) throw new ArgumentNullException(nameof(Image1));
@@ -67,7 +76,6 @@
                 DiffImage = DiffImage,
             };
         }
-
 
         private float PerceptualColorDifference(Color Pixel1, Color Pixel2) 
         {
